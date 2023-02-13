@@ -1,0 +1,26 @@
+server:
+  port: 8083
+
+spring:
+  datasource:
+    url: jdbc:h2:~/hotelservice
+    username: sa
+    password:
+
+  application:
+    name: HOTEL-SERVICE
+  config:
+    import: optional:configserver:http://localhost:8087
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
+okta:
+  oauth2:
+    issuer: https://dev-01389291.okta.com/oauth2/default
+    audience: api://default
