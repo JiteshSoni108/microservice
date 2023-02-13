@@ -1,0 +1,13 @@
+server:
+  port: 8072
+
+spring:
+  application:
+    name: CONFIG_SERVER
+
+  cloud:
+    config:
+      server:
+        git:
+          uri: https://github.com/JiteshSoni108/ms-config
+          clone-on-start: true
