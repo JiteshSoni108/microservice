@@ -1,0 +1,86 @@
+server:
+  port: 8081
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/userservicems
+    username: root
+    password: Kiran@160920
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  application:
+    name: USER-SERVICE
+
+  config:
+    import: optional:configserver:http://localhost:8081
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database-platform: org.hibernate.dialect.MySQLDialect
+
+#          my-own-client: is custom name
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://dev-01389291.okta.com/oauth2/default
+      client:
+        registration:
+          my-own-client:
+            provider: okta
+            authorizationGrantType: client-credentials
+            scope: internal
+            clientId: 0oa8a21a40D4ihNsP5d7
+            clientSecret: SfBDM8gNDlKmXW1KX5EtvdtH8I4YtrYGoHHNIB_v
+        provider:
+          okta:
+            issuerUri: https://dev-01389291.okta.com/oauth2/default
+
+
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: ALWAYS
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      RATING_SAVE_SERVICE :
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 2s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+  retry:
+    instances:
+      RATING_FETCH_RETRY_SERVICE:
+        maxAttempts: 2
+        waitDuration: 2s
+
+  ratelimiter:
+    instances:
+      RATING_FETCH_RATE_LIMITER:
+        limitRefreshPeriod: 4s
+        limitForPeriod: 2
+        timeoutDuration: 0s
+
+okta:
+  oauth2:
+    issuer: https://dev-01389291.okta.com/oauth2/default
+    audience: api://default
+
+
